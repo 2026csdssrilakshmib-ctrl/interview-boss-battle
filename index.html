@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Interview Boss Battle | Technical & Behavioral Simulator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="game-container" id="gameContainer">
+    
+    <!-- Top HUD / Arena Header -->
+    <header class="arena-hud">
+      <div class="hud-title-zone">
+        <span class="hud-badge">STAGE 10-B</span>
+        <span id="playerClassHudBadge" class="player-title-badge">⚔️ Full-Stack Warrior</span>
+      </div>
+      <div class="hud-controls">
+        <button id="homePortalBtn" class="icon-btn btn-home-hud" style="display: none;" title="Return to Home Portal">
+          <span>🏠</span>
+          <span>Home</span>
+        </button>
+        <button id="soundToggleBtn" class="icon-btn" title="Toggle Sound FX">🔊</button>
+      </div>
+    </header>
+
+    <!-- Health / Confidence Gauges (Active during Battle & Results) -->
+    <div id="battleMetersRow" class="battle-meters" style="display: none;">
+      <div class="meter-card">
+        <div class="meter-header">
+          <span class="meter-label">
+            <span>🛡️</span>
+            <span>Your Confidence HP</span>
+          </span>
+          <span id="candidateHpVal" class="meter-val">100/100</span>
+        </div>
+        <div class="bar-track">
+          <div id="candidateHpFill" class="bar-fill candidate-hp" style="width: 100%;"></div>
+        </div>
+      </div>
+
+      <div class="meter-card">
+        <div class="meter-header">
+          <span class="meter-label">
+            <span>👾</span>
+            <span>Lord Syntax (Boss Skepticism)</span>
+          </span>
+          <span id="bossHpVal" class="meter-val">100/100</span>
+        </div>
+        <div class="bar-track">
+          <div id="bossHpFill" class="bar-fill boss-hp" style="width: 100%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Boss Stage / Reactive Speech Zone (Active during Battle) -->
+    <div id="bossArenaRow" class="boss-arena" style="display: none;">
+      <div class="boss-avatar-box" id="bossAvatarBox">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+          <rect x="4" y="2" width="2" height="4" fill="#f43f5e"/>
+          <rect x="18" y="2" width="2" height="4" fill="#f43f5e"/>
+          <rect x="3" y="1" width="2" height="2" fill="#fb7185"/>
+          <rect x="19" y="1" width="2" height="2" fill="#fb7185"/>
+          <rect x="5" y="4" width="14" height="13" fill="#6d28d9"/>
+          <rect x="6" y="5" width="12" height="11" fill="#7c3aed"/>
+          <rect x="7" y="6" width="10" height="9" fill="#8b5cf6"/>
+          <rect x="6" y="8" width="12" height="4" fill="#0f172a"/>
+          <rect x="7" y="9" width="4" height="2" fill="#38bdf8"/>
+          <rect x="13" y="9" width="4" height="2" fill="#38bdf8"/>
+          <rect x="8" y="9" width="1" height="1" fill="#ffffff"/>
+          <rect x="14" y="9" width="1" height="1" fill="#ffffff"/>
+          <rect x="9" y="14" width="1" height="1" fill="#f8fafc"/>
+          <rect x="10" y="15" width="4" height="1" fill="#0f172a"/>
+          <rect x="14" y="14" width="1" height="1" fill="#f8fafc"/>
+          <rect x="15" y="13" width="1" height="0.5" fill="#0f172a"/>
+          <rect x="6" y="17" width="12" height="6" fill="#1e293b"/>
+          <rect x="10" y="17" width="4" height="3" fill="#ffffff"/>
+          <rect x="11" y="18" width="2" height="5" fill="#f59e0b"/>
+          <rect x="10" y="22" width="4" height="1" fill="#f59e0b"/>
+        </svg>
+      </div>
+
+      <div class="boss-speech-bubble">
+        <div class="boss-name-tag">Lord Syntax • Principal Interview Architect</div>
+        <div id="bossBubbleText">"Welcome to the final gate. Show me clarity, structure, and real engineering rigor."</div>
+      </div>
+    </div>
+
+    <!-- Main Viewport -->
+    <main class="page-viewport" style="padding: 0;">
+
+      <!-- =======================================================
+           LANDING PAGE: SIMPLE & INTUITIVE PORTAL
+           ======================================================= -->
+      <section id="portalLandingPage" style="display: flex; flex-direction: column;">
+        
+        <!-- Hero Section -->
+        <div class="portal-hero">
+          <div class="cover-header-tag">
+            <span>👾</span>
+            <span>FINAL ROUND ARCHITECT ENCOUNTER • 10-QUESTION SIMULATOR</span>
+          </div>
+
+          <div class="pixel-emoji-stage">
+            <div id="pixelEmojiBtn" class="pixel-emoji-wrapper" title="Click the Pixel Boss to hear his roar!">
+              <svg class="pixel-emoji-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+                <rect x="4" y="2" width="2" height="4" fill="#f43f5e"/>
+                <rect x="18" y="2" width="2" height="4" fill="#f43f5e"/>
+                <rect x="3" y="1" width="2" height="2" fill="#fb7185"/>
+                <rect x="19" y="1" width="2" height="2" fill="#fb7185"/>
+                <rect x="4" y="0" width="1" height="1" fill="#fecdd3"/>
+                <rect x="19" y="0" width="1" height="1" fill="#fecdd3"/>
+                <rect x="1" y="8" width="1" height="1" fill="#38bdf8"/>
+                <rect x="22" y="7" width="1" height="1" fill="#f59e0b"/>
+                <rect x="2" y="17" width="1" height="1" fill="#c084fc"/>
+                <rect x="21" y="18" width="1" height="1" fill="#38bdf8"/>
+                <rect x="5" y="4" width="14" height="13" fill="#581c87"/>
+                <rect x="6" y="5" width="12" height="11" fill="#7c3aed"/>
+                <rect x="7" y="6" width="10" height="9" fill="#8b5cf6"/>
+                <rect x="6" y="8" width="12" height="4" fill="#0f172a"/>
+                <rect x="7" y="9" width="4" height="2" fill="#06b6d4"/>
+                <rect x="13" y="9" width="4" height="2" fill="#06b6d4"/>
+                <rect x="8" y="9" width="2" height="1" fill="#38bdf8"/>
+                <rect x="14" y="9" width="2" height="1" fill="#38bdf8"/>
+                <rect x="8" y="9" width="1" height="1" fill="#ffffff"/>
+                <rect x="14" y="9" width="1" height="1" fill="#ffffff"/>
+                <rect x="8" y="14" width="1" height="1" fill="#0f172a"/>
+                <rect x="9" y="14" width="1" height="1" fill="#f8fafc"/>
+                <rect x="10" y="14" width="4" height="2" fill="#0f172a"/>
+                <rect x="14" y="14" width="1" height="1" fill="#f8fafc"/>
+                <rect x="15" y="13" width="1" height="1" fill="#0f172a"/>
+                <rect x="11" y="15" width="2" height="1" fill="#f43f5e"/>
+                <rect x="5" y="17" width="14" height="7" fill="#1e293b"/>
+                <rect x="6" y="18" width="12" height="5" fill="#0f172a"/>
+                <rect x="9" y="17" width="6" height="3" fill="#f8fafc"/>
+                <rect x="11" y="18" width="2" height="5" fill="#f59e0b"/>
+                <rect x="10" y="22" width="4" height="2" fill="#d97706"/>
+              </svg>
+            </div>
+            <div class="pixel-boss-label">👾 LORD SYNTAX [LVL 99 ARCHITECT]</div>
+          </div>
+
+          <h1 class="portal-title">
+            The Technical <span>Boss Battle</span>
+          </h1>
+
+          <p class="portal-subtitle">
+            Job interview meets RPG boss battle. Answer 10 realistic questions, defend your Confidence HP, and defeat Lord Syntax to secure your engineering offer.
+          </p>
+
+          <!-- Main Launch Action Buttons -->
+          <div class="portal-quick-launch">
+            <button id="startFullGameBtn" class="btn-primary btn-start-arcade">
+              <span>⚔️ Start Interview Battle (10 Questions)</span>
+              <span>▶</span>
+            </button>
+            <button id="jumpJudgePathBtn" class="btn-primary" style="background: rgba(245, 158, 11, 0.15); border: 1px solid var(--accent-gold); color: #fbbf24;">
+              <span>⚖️ Judge 3-Step Demo</span>
+              <span>→</span>
+            </button>
+            <button id="jumpDocsVaultBtn" class="btn-primary" style="background: rgba(192, 132, 252, 0.12); border: 1px solid var(--star-purple); color: #c084fc;">
+              <span>📜 Official Docs (DOC 01-06)</span>
+              <span>→</span>
+            </button>
+          </div>
+
+          <!-- 3-Step Visual Guide: Makes the game instantly understandable -->
+          <div class="how-it-works-grid">
+            <div class="how-step-card">
+              <div class="how-step-icon">💬</div>
+              <div class="how-step-title">1. Answer Dilemmas</div>
+              <div class="how-step-desc">10 realistic multiple-choice questions page-by-page covering architecture, scaling & team leadership.</div>
+            </div>
+
+            <div class="how-step-card">
+              <div class="how-step-icon">🛡️</div>
+              <div class="how-step-title">2. Composure Matters</div>
+              <div class="how-step-desc">Smart answers restore Confidence HP & cut boss skepticism. Vague buzzwords deal direct HP damage.</div>
+            </div>
+
+            <div class="how-step-card">
+              <div class="how-step-icon">🏆</div>
+              <div class="how-step-title">3. Offers & Growth</div>
+              <div class="how-step-desc">Finish the battle to claim an S/A/B/C tier rank, 2 customized improvement tips, and a motivational quote.</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Navigation Tabs: 4 Core Paths + Evaluation Docs -->
+        <nav class="path-nav-tabs">
+          <button class="path-tab-btn active" data-target="pathOverview">
+            <span>📖</span>
+            <span>1. How to Play & Class</span>
+          </button>
+
+          <button class="path-tab-btn" data-target="pathResults">
+            <span>🏆</span>
+            <span>2. Scorecard & Ranks</span>
+          </button>
+
+          <button class="path-tab-btn" data-target="pathTips">
+            <span>💡</span>
+            <span>3. Tips & STAR Guide</span>
+          </button>
+
+          <button class="path-tab-btn judge-tab" data-target="pathJudge">
+            <span>⚖️</span>
+            <span>4. Judge 3-Step Demo</span>
+          </button>
+
+          <button class="path-tab-btn" data-target="pathDocsVault">
+            <span>📜</span>
+            <span>5. Docs Vault (DOC 01-06)</span>
+          </button>
+        </nav>
+
+        <!-- Path Panels Viewport -->
+        <div class="path-content-viewport">
+
+          <!-- 1. OVERVIEW & HOW TO PLAY -->
+          <div id="pathOverview" class="path-panel active">
+            <div class="panel-header">
+              <h2 class="panel-title"><span>📖</span> 1. How to Play & Candidate Class</h2>
+              <p class="panel-subtitle">Everything you need to know to survive the 10-question architect encounter.</p>
+            </div>
+
+            <div class="overview-grid">
+              <div class="info-card">
+                <div class="info-card-title"><span>🎮</span> Turn-Based Interview Combat</div>
+                <div class="info-card-text">
+                  The final technical interview is portrayed as an RPG battle against <strong>Lord Syntax</strong>. Each question is a tactical dilemma where you defend your technical and team choices.
+                </div>
+              </div>
+
+              <div class="info-card">
+                <div class="info-card-title"><span>🛡️</span> Confidence HP vs. Boss Skepticism</div>
+                <div class="info-card-text">
+                  You start with <strong>100 Confidence HP</strong>. Strong answers maintain composure and strike down Boss Skepticism HP. Buzzwords or excuses cause damage.
+                </div>
+              </div>
+
+              <div class="info-card">
+                <div class="info-card-title"><span>📄</span> Page-by-Page Focus</div>
+                <div class="info-card-text">
+                  Questions are presented <strong>one per page</strong> so you can focus on one scenario at a time. Instant hiring feedback reveals why your choice succeeded or fell short.
+                </div>
+              </div>
+
+              <div class="info-card">
+                <div class="info-card-title"><span>⭐</span> Question 5: STAR Behavioral Round</div>
+                <div class="info-card-text">
+                  Round 5 tests the industry-standard <strong>STAR methodology</strong> (Situation, Task, Action, Result). Use the interactive helper to inspect structured answers.
+                </div>
+              </div>
+            </div>
+
+            <!-- Class Picker -->
+            <div class="class-selector-area">
+              <div class="class-picker-title">Select Your Candidate Class:</div>
+              <div class="class-options-grid">
+                <div class="class-pill active" data-class="⚔️ Full-Stack Warrior">
+                  <span class="class-pill-name">⚔️ Full-Stack Warrior</span>
+                  <span class="class-pill-perk">+Balanced Tech & STAR Mastery</span>
+                </div>
+                <div class="class-pill" data-class="🛡️ Backend Paladin">
+                  <span class="class-pill-name">🛡️ Backend Paladin</span>
+                  <span class="class-pill-perk">+High Scale & DB Resilience</span>
+                </div>
+                <div class="class-pill" data-class="🧙 Cloud Architect">
+                  <span class="class-pill-name">🧙 Cloud Architect</span>
+                  <span class="class-pill-perk">+Strategic System RFCs</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 4px;">
+              <button class="btn-primary btn-start-game-from-tab">
+                <span>⚔️ Start Interview From Question 1</span>
+                <span>▶</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 2. RESULT SECTION -->
+          <div id="pathResults" class="path-panel">
+            <div class="panel-header">
+              <h2 class="panel-title"><span>🏆</span> 2. Scorecard & Offer Tiers</h2>
+              <p class="panel-subtitle">How candidate performance is calculated and translated into career offers.</p>
+            </div>
+
+            <div class="rank-matrix-grid">
+              <div class="rank-preview-card" style="border-color: var(--accent-gold);">
+                <div class="rank-preview-letter" style="color: var(--accent-gold);">RANK S</div>
+                <div class="rank-preview-role">Principal / Staff Offer</div>
+                <div class="rank-preview-req">90% - 100% Score</div>
+              </div>
+
+              <div class="rank-preview-card" style="border-color: var(--accent-cyan);">
+                <div class="rank-preview-letter" style="color: var(--accent-cyan);">RANK A</div>
+                <div class="rank-preview-role">Senior Engineer Offer</div>
+                <div class="rank-preview-req">75% - 89% Score</div>
+              </div>
+
+              <div class="rank-preview-card" style="border-color: var(--hp-green);">
+                <div class="rank-preview-letter" style="color: var(--hp-green);">RANK B</div>
+                <div class="rank-preview-role">Mid-Level Specialist</div>
+                <div class="rank-preview-req">60% - 74% Score</div>
+              </div>
+
+              <div class="rank-preview-card" style="border-color: var(--hp-red);">
+                <div class="rank-preview-letter" style="color: var(--hp-red);">RANK C</div>
+                <div class="rank-preview-role">Growth Track</div>
+                <div class="rank-preview-req">&lt; 60% Score</div>
+              </div>
+            </div>
+
+            <div class="overview-grid" style="margin-top: 6px;">
+              <div class="info-card">
+                <div class="info-card-title"><span>💡</span> 2 Tailored Improvement Tips</div>
+                <div class="info-card-text">
+                  The results screen analyzes your answer history and dynamically outputs <strong>two prioritized improvement tips</strong> targeting any gaps detected during the interview.
+                </div>
+              </div>
+
+              <div class="info-card">
+                <div class="info-card-title"><span>💬</span> Motivational Leadership Quote</div>
+                <div class="info-card-text">
+                  Reinforces healthy interview psychology with quotes from engineering leaders and a quick refresh toggle button to cycle new quotes.
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 4px;">
+              <button id="previewResultsBtn" class="btn-primary" style="background: rgba(56, 189, 248, 0.15); border: 1px solid var(--accent-cyan); color: #38bdf8;">
+                <span>👁️ View Live Result Screen Preview</span>
+                <span>→</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 3. TIPS & TRICKS -->
+          <div id="pathTips" class="path-panel">
+            <div class="panel-header">
+              <h2 class="panel-title"><span>💡</span> 3. Tips & The STAR Behavioral Framework</h2>
+              <p class="panel-subtitle">Master the behavioral patterns and trade-off heuristics that hiring committees reward.</p>
+            </div>
+
+            <div style="font-size: 13px; font-weight: 700; color: var(--star-purple); margin-bottom: 2px;">
+              ⭐ THE STAR FRAMEWORK BREAKDOWN (Crucial for Question 5):
+            </div>
+
+            <div class="star-deepdive-grid">
+              <div class="star-card">
+                <div class="star-card-letter">S • Situation (10%)</div>
+                <div class="star-card-body">Briefly state the context: company stage, tech stack, and what business constraint was at stake.</div>
+              </div>
+
+              <div class="star-card">
+                <div class="star-card-letter">T • Task (10%)</div>
+                <div class="star-card-body">Clarify your exact personal ownership and constraints, avoiding vague collective claims.</div>
+              </div>
+
+              <div class="star-card">
+                <div class="star-card-letter">A • Action (60%)</div>
+                <div class="star-card-body">The core: Highlight data-backed decisions, benchmark POCs, empathetic 1-on-1s, and consensus-building without ego.</div>
+              </div>
+
+              <div class="star-card">
+                <div class="star-card-letter">R • Result (20%)</div>
+                <div class="star-card-body">Quantify business impact: latency cut by 35%, 12M events with 0 drops, zero downtime, and retrospective learnings.</div>
+              </div>
+            </div>
+
+            <div class="overview-grid" style="margin-top: 6px;">
+              <div class="info-card">
+                <div class="info-card-title"><span>⚖️</span> Trade-offs Over Silver Bullets</div>
+                <div class="info-card-text">
+                  Senior engineers never claim a tool is 100% perfect. Always frame solutions around trade-offs: latency vs consistency, complexity vs time-to-market.
+                </div>
+              </div>
+
+              <div class="info-card">
+                <div class="info-card-title"><span>🎯</span> Strategic Reverse-Interviewing</div>
+                <div class="info-card-text">
+                  In Question 10 ("Any questions for us?"), asking about 6-month team success metrics and scaling bottlenecks demonstrates senior leadership agency.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. JUDGE DEMO & VERIFICATION PATH -->
+          <div id="pathJudge" class="path-panel">
+            <div class="panel-header">
+              <h2 class="panel-title" style="color: var(--accent-gold);"><span>⚖️</span> 4. Judge Demo & Verification Path</h2>
+              <p class="panel-subtitle">A streamlined, 3-step rapid evaluation path built specifically for judges and mentors.</p>
+            </div>
+
+            <div class="judge-panel-container">
+              
+              <div class="judge-alert-banner">
+                <div>
+                  <div class="judge-alert-title">⚡ 3-STEP RAPID VERIFICATION WALKTHROUGH</div>
+                  <div class="judge-alert-desc">Click the direct jump buttons below to evaluate each required verification milestone in seconds:</div>
+                </div>
+              </div>
+
+              <!-- 3-Step Verification Cards -->
+              <div class="verification-steps-list">
+                
+                <!-- STEP 01 -->
+                <div class="v-step-card">
+                  <div class="v-step-info">
+                    <div class="v-step-badge">STEP 01: REACTIVE HP & CONFIDENCE METER</div>
+                    <div class="v-step-title">Answer a question and show the HP/confidence meter update</div>
+                    <div class="v-step-detail">
+                      Click below to jump to <strong>Question 1</strong>. Pick Option B (gain +10 Confidence) or Option D (take damage). Watch the HP bar update in real-time with combat feedback.
+                    </div>
+                  </div>
+                  <button id="judgeStep1Btn" class="btn-v-step">
+                    <span>🚀 Jump to Step 01 (Q1)</span>
+                    <span>→</span>
+                  </button>
+                </div>
+
+                <!-- STEP 02 -->
+                <div class="v-step-card">
+                  <div class="v-step-info">
+                    <div class="v-step-badge">STEP 02: STAR BEHAVIORAL HELPER</div>
+                    <div class="v-step-title">Open the behavioural question and inspect the STAR helper</div>
+                    <div class="v-step-detail">
+                      Click below to jump directly to <strong>Question 5 (Behavioral Trial)</strong>. Inspect the interactive <strong>STAR Helper Box</strong> and see how Option B formats Situation, Task, Action, and Result.
+                    </div>
+                  </div>
+                  <button id="judgeStep2Btn" class="btn-v-step">
+                    <span>⭐ Jump to Step 02 (Q5)</span>
+                    <span>→</span>
+                  </button>
+                </div>
+
+                <!-- STEP 03 -->
+                <div class="v-step-card">
+                  <div class="v-step-info">
+                    <div class="v-step-badge">STEP 03: SCORECARD, RANK & TIPS</div>
+                    <div class="v-step-title">Reach the result screen and show rank/tips & quote</div>
+                    <div class="v-step-detail">
+                      Click below to jump directly to the <strong>Scorecard</strong>. Verify the S/A/B/C Tier rank badge, the 2 tailored improvement tips, and the motivational quote with refresh toggle.
+                    </div>
+                  </div>
+                  <button id="judgeStep3Btn" class="btn-v-step">
+                    <span>🏆 Jump to Step 03 (Results)</span>
+                    <span>→</span>
+                  </button>
+                </div>
+
+              </div>
+
+              <!-- Non-Negotiable Build Rules Audit -->
+              <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px 14px;">
+                <div style="font-size: 13px; font-weight: 800; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+                  📋 NON-NEGOTIABLE BUILD RULES COMPLIANCE AUDIT
+                </div>
+                <div class="rules-audit-grid">
+                  <div class="rule-check-item">
+                    <span class="rule-check-icon">✓</span>
+                    <span><strong>Rule 1:</strong> 10 Questions presented page-by-page.</span>
+                  </div>
+                  <div class="rule-check-item">
+                    <span class="rule-check-icon">✓</span>
+                    <span><strong>Rule 2:</strong> Choices modify Confidence/HP meter with feedback.</span>
+                  </div>
+                  <div class="rule-check-item">
+                    <span class="rule-check-icon">✓</span>
+                    <span><strong>Rule 3:</strong> STAR Behavioral Question with interactive helper.</span>
+                  </div>
+                  <div class="rule-check-item">
+                    <span class="rule-check-icon">✓</span>
+                    <span><strong>Rule 4:</strong> Scorecard with Rank, 2 improvement tips & quote.</span>
+                  </div>
+                  <div class="rule-check-item">
+                    <span class="rule-check-icon">✓</span>
+                    <span><strong>Rule 5:</strong> User-friendly with balanced normal font size (14–16px).</span>
+                  </div>
+                  <div class="rule-check-item">
+                    <span class="rule-check-icon">✓</span>
+                    <span><strong>Rule 6:</strong> Pixel-form boss emoji cover & Web Audio synthesizer.</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Shortcut to Docs Vault -->
+              <div style="text-align: right;">
+                <button id="goToDocsVaultLinkBtn" class="btn-primary" style="background: rgba(192, 132, 252, 0.15); border: 1px solid var(--star-purple); color: #c084fc; font-size: 13px; padding: 7px 16px;">
+                  <span>📜 View Full Documentation Vault (DOC-01 to DOC-06)</span>
+                  <span>→</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- =======================================================
+               5. DOCS VAULT: DOC-01 TO DOC-06 COMPLETE MODULES
+               ======================================================= -->
+          <div id="pathDocsVault" class="path-panel">
+            <div class="panel-header">
+              <h2 class="panel-title" style="color: #fda4af;"><span>📜</span> 5. Documentation Vault (DOC-01 to DOC-06)</h2>
+              <p class="panel-subtitle">Official documentation answering all evaluation, privacy, testing, and handoff requirements.</p>
+            </div>
+
+            <div class="doc-suite-container">
+              
+              <!-- DOC-01 -->
+              <div class="doc-card">
+                <span class="doc-badge doc-badge-yellow">DOC - 01</span>
+                <h3 class="doc-card-title">README & Quickstart</h3>
+                <p class="doc-card-intro">Write a short README with project purpose, features, no-secret setup steps, demo data, screenshots and known limitations. A judge should know what to click within 30 seconds.</p>
+                <div class="doc-card-body">
+                  <p style="margin-bottom: 6px;"><strong>Project Purpose:</strong> An interactive turn-based RPG interview simulator designed to gamify high-stakes technical and behavioral interview preparation against "Lord Syntax" (Level 99 Principal Architect).</p>
+                  <p style="margin-bottom: 6px;"><strong>Core Features:</strong> 10 turn-based dilemmas, real-time Confidence HP & Boss Skepticism gauges, STAR framework blueprint helper, S/A/B/C Tier Scorecard, 2 targeted improvement tips, motivational quote, and zero-dependency Web Audio synthesizer.</p>
+                  <p style="margin-bottom: 6px;"><strong>No-Secret Setup Steps:</strong> Run <code>python -m http.server 8080</code> inside the directory, or double-click <code>index.html</code> to open directly in any browser. Zero API keys, secrets, or cloud dependencies required.</p>
+                  <p style="margin-bottom: 6px;"><strong>Demo Data:</strong> 10 production-tested interview scenarios covering system scaling, Friday 5 PM security vulnerabilities, tech debt negotiation, and cross-functional leadership.</p>
+                  <p><strong>30-Second Judge Action Plan:</strong> From the landing hub, click <em>Judge 3-Step Demo</em> &gt; Click <em>Step 01</em> to test HP reaction &gt; Click <em>Step 02</em> to test STAR &gt; Click <em>Step 03</em> to view Rank & Tips.</p>
+                </div>
+              </div>
+
+              <!-- DOC-02 -->
+              <div class="doc-card">
+                <span class="doc-badge doc-badge-purple">DOC - 02</span>
+                <h3 class="doc-card-title">Judge Runbook</h3>
+                <p class="doc-card-intro">Write a numbered 60-second demo script: starting state, exact actions, expected output and where the twist appears. Mention any simulated feature.</p>
+                <div class="doc-card-body">
+                  <div class="doc-checklist-item">
+                    <span class="doc-step-number">01</span>
+                    <div><strong>Starting State (0:00 - 0:10):</strong> App loads at <code>http://localhost:8080</code> showing the 5-Path Portal. The pixel boss emoji is idle with 100/100 Confidence HP.</div>
+                  </div>
+                  <div class="doc-checklist-item">
+                    <span class="doc-step-number">02</span>
+                    <div><strong>Action 1 (0:10 - 0:25):</strong> Click <em>Judge Demo</em> &gt; Click <code>[🚀 Jump to Step 01]</code>. Select <strong>Option B</strong>. Expected output: Green <code>+10 Confidence</code> float, Boss Skepticism takes 15 damage, and hiring logic is revealed.</div>
+                  </div>
+                  <div class="doc-checklist-item">
+                    <span class="doc-step-number">03</span>
+                    <div><strong>Action 2 & THE TWIST (0:25 - 0:45):</strong> Click <em>🏠 Home</em> &gt; Click <code>[⭐ Jump to Step 02 (Q5)]</code>. <strong>The Twist Appears:</strong> The Boss unleashes a Critical Behavioral Attack! A glowing purple STAR Blueprint requires Situation, Task, Action, and Result formatting. Test <strong>Option D</strong> to observe critical toxic penalty (-30 HP + screen shake), then inspect <strong>Option B</strong> for the structured STAR benchmark breakdown.</div>
+                  </div>
+                  <div class="doc-checklist-item">
+                    <span class="doc-step-number">04</span>
+                    <div><strong>Action 3 (0:45 - 0:60):</strong> Click <em>🏠 Home</em> &gt; Click <code>[🏆 Jump to Step 03 (Results)]</code>. Expected output: Animated Rank S/A/B/C banner, 2 dynamic improvement tips, motivational quote with refresh toggle, and 10-question review drawer.</div>
+                  </div>
+                  <p style="margin-top: 6px;"><strong>Simulated Features:</strong> Synthetic 8-bit sound generated dynamically using browser Web Audio API oscillators, stateful SVG facial reactions, and algorithmic candidate ranking.</p>
+                </div>
+              </div>
+
+              <!-- DOC-03 -->
+              <div class="doc-card">
+                <span class="doc-badge doc-badge-pink">DOC - 03</span>
+                <h3 class="doc-card-title">Five-Test Checklist</h3>
+                <p class="doc-card-intro">List five manual tests with steps and expected results one invalid input test, one happy path, one twist check, one reset/refresh check and one boundary case.</p>
+                <div class="doc-card-body">
+                  <div class="doc-checklist-item">
+                    <span class="doc-step-number">T1</span>
+                    <div><strong>Invalid Input Test (Rapid Button Spamming):</strong><br><em>Steps:</em> On any question, rapidly spam-click multiple choices simultaneously.<br><em>Expected:</em> All 4 choice buttons instantly disable on the first selection (<code>disabled = true</code>), completely preventing double-counting or race conditions.</div>
+                  </div>
+                  <div class="doc-checklist-item">
+                    <span class="doc-step-number">T2</span>
+                    <div><strong>Happy Path Test (Optimal Run):</strong><br><em>Steps:</em> Select Option B (or correct option) across all questions.<br><em>Expected:</em> Candidate finishes with 100/100 Confidence HP, Boss HP at 0, Rank S "Principal Offer Extended", and STAR Method Mastery rated "Master (S)".</div>
+                  </div>
+                  <div class="doc-checklist-item">
+                    <span class="doc-step-number">T3</span>
+                    <div><strong>The Twist Check (STAR Blueprint Enforcement):</strong><br><em>Steps:</em> Navigate to Question 5.<br><em>Expected:</em> The STAR Blueprint helper automatically expands, and Option B displays formatted <code>[S]</code>, <code>[T]</code>, <code>[A]</code>, <code>[R]</code> chips contrasted with combative or unstructured answers.</div>
+                  </div>
+                  <div class="doc-checklist-item">
+                    <span class="doc-step-number">T4</span>
+                    <div><strong>Reset / Refresh Check:</strong><br><em>Steps:</em> Mid-battle on Question 7, click "🏠 Home" in HUD or "Play Again" on results.<br><em>Expected:</em> State completely purges: HP resets to 100/100, score resets to 0, question index resets to 0, and UI returns cleanly to the initial landing hub.</div>
+                  </div>
+                  <div class="doc-checklist-item">
+                    <span class="doc-step-number">T5</span>
+                    <div><strong>Boundary Case Test (Zero HP Clamping):</strong><br><em>Steps:</em> Intentionally pick wrong answers consecutively.<br><em>Expected:</em> Confidence HP safely clamps at a minimum floor (10 HP), bar color shifts from Green (&gt;65%) to Yellow (35-65%) to Red (&lt;35%) without negative number overflow, allowing the user to complete the review.</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- DOC-04 -->
+              <div class="doc-card">
+                <span class="doc-badge doc-badge-yellow">DOC - 04</span>
+                <h3 class="doc-card-title">User Quickstart</h3>
+                <p class="doc-card-intro">Write a four-step guide for a first-time user: what the app does, what input to provide, what result to expect and how to recover from a mistake.</p>
+                <div class="doc-card-body">
+                  <div class="doc-checklist-item">
+                    <span class="doc-step-number">01</span>
+                    <div><strong>What the App Does:</strong> An interactive interview training arena that turns high-pressure technical and behavioral questions into a tactical RPG boss encounter.</div>
+                  </div>
+                  <div class="doc-checklist-item">
+                    <span class="doc-step-number">02</span>
+                    <div><strong>What Input to Provide:</strong> Select one multiple choice option per question representing your chosen answer strategy (e.g. data-backed trade-offs vs buzzwords).</div>
+                  </div>
+                  <div class="doc-checklist-item">
+                    <span class="doc-step-number">03</span>
+                    <div><strong>What Result to Expect:</strong> Real-time HP damage/healing feedback, boss speech bubble reactions, and in-depth hiring committee rationales. At the end, you receive an S/A/B/C Tier Rank, 2 personalized tips, and a motivational quote.</div>
+                  </div>
+                  <div class="doc-checklist-item">
+                    <span class="doc-step-number">04</span>
+                    <div><strong>How to Recover from a Mistake:</strong> When you pick a flawed answer, read the hiring manager breakdown to diagnose the issue. Subsequent correct answers award +10 to +15 Confidence HP recovery. You can also click <em>🏠 Home</em> to review tips or restart anytime.</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- DOC-05 -->
+              <div class="doc-card">
+                <span class="doc-badge doc-badge-purple">DOC - 05</span>
+                <h3 class="doc-card-title">Data & Privacy Note</h3>
+                <p class="doc-card-intro">List the fields the app stores, whether it uses local browser storage, what is demo/fake data and what the app never sends anywhere. Confirm no real secrets are included.</p>
+                <div class="doc-card-body">
+                  <p style="margin-bottom: 6px;"><strong>Stored Fields:</strong> The app only maintains lightweight in-memory session variables: <code>currentQuestionIndex</code>, <code>candidateHp</code>, <code>bossHp</code>, <code>score</code>, <code>userAnswers</code> (array of chosen keys and correctness), <code>playerClass</code>, and <code>soundEnabled</code>.</p>
+                  <p style="margin-bottom: 6px;"><strong>Local Browser Storage:</strong> The application does <strong>NOT</strong> use <code>localStorage</code>, <code>sessionStorage</code>, or cookies. All state lives exclusively in ephemeral RAM and clears on reload.</p>
+                  <p style="margin-bottom: 6px;"><strong>Demo / Fake Data:</strong> All question prompts, company scenarios, boss dialogues, and scores are simulated educational mock data.</p>
+                  <p style="margin-bottom: 6px;"><strong>Outbound Data Transmission:</strong> Zero telemetry, zero analytics tracking, zero third-party scripts. The app operates 100% offline and never sends data anywhere.</p>
+                  <p><strong>Confirmation of No Secrets:</strong> Confirmed 100% secret-free. No private API keys, credentials, authentication tokens, or personal identifying information exist in the codebase.</p>
+                </div>
+              </div>
+
+              <!-- DOC-06 -->
+              <div class="doc-card">
+                <span class="doc-badge doc-badge-pink">DOC - 06</span>
+                <h3 class="doc-card-title">Handoff & Limitations</h3>
+                <p class="doc-card-intro">Explain the main files/components, where the core logic lives, how demo data is reset, what is deliberately mocked and the top three improvements needed for real deployment.</p>
+                <div class="doc-card-body">
+                  <p style="margin-bottom: 6px;"><strong>Main Files & Components:</strong><br>
+                    • <code>index.html</code>: Portal viewports, HUD gauges, boss dialogue arena, question container, results scorecard, and Docs Vault.<br>
+                    • <code>style.css</code>: RPG visual system, pixel-art styling, floating damage keyframes, and DOC badge palettes.<br>
+                    • <code>app.js</code>: Sound synthesizer (<code>SoundFX</code>), question database (<code>QUESTIONS_DB</code>), state machine, and dynamic tips engine.
+                  </p>
+                  <p style="margin-bottom: 6px;"><strong>Where Core Logic Lives:</strong> HP delta math, question transitions, and score calculations reside in <code>handleChoiceSelect()</code>, <code>goToNextQuestion()</code>, and <code>finishBattle()</code> in <code>app.js</code>.</p>
+                  <p style="margin-bottom: 6px;"><strong>How Demo Data is Reset:</strong> The <code>resetGame()</code> and <code>returnToPortal()</code> functions reinitialize state variables to baseline values (100 HP, 0 score) and restore container viewports.</p>
+                  <p style="margin-bottom: 6px;"><strong>What is Deliberately Mocked:</strong> AI dialogue responses are mocked using reactive pre-authored hiring rubrics; audio is synthesized client-side via Web Audio API oscillators; multi-player ranking is mocked using percentile math.</p>
+                  <p><strong>Top 3 Improvements Needed for Real Production Deployment:</strong><br>
+                    1. <em>Dynamic Question Engine:</em> Backend database with role-specific pools (Frontend, Backend, Distributed Systems, ML Engineering).<br>
+                    2. <em>Speech-to-Text Voice Analysis:</em> Allow candidates to speak answers aloud and evaluate conversational pacing and STAR filler-word ratios.<br>
+                    3. <em>Persistent User Dashboard:</em> Cloud user authentication with progress analytics and exportable PDF interview performance reports.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- =======================================================
+           PAGES 1-10: QUESTION BATTLE PAGE
+           ======================================================= -->
+      <section id="battlePage" class="battle-page" style="display: none; padding: 20px;">
+        <div class="question-header">
+          <span id="roundTracker" class="round-tracker">Question 1 of 10</span>
+          <span id="categoryTag" class="category-tag">System Design</span>
+        </div>
+
+        <h2 id="questionText" class="question-text">Loading question prompt...</h2>
+
+        <div id="starHelperBox" class="star-helper-box" style="display: none;">
+          <div class="star-helper-title">
+            <span>⭐</span>
+            <span>STAR Behavioral Blueprint</span>
+          </div>
+          <div class="star-chips">
+            <div class="star-chip"><strong>S • Situation</strong>Context & background</div>
+            <div class="star-chip"><strong>T • Task</strong>Your specific goal</div>
+            <div class="star-chip"><strong>A • Action</strong>Concrete steps you led</div>
+            <div class="star-chip"><strong>R • Result</strong>Quantifiable metrics</div>
+          </div>
+        </div>
+
+        <div id="choicesContainer" class="choices-list"></div>
+
+        <div id="feedbackBox" class="feedback-box" style="display: none;">
+          <div class="feedback-banner">
+            <div id="feedbackStatus" class="feedback-status">✓ CRITICAL HIT!</div>
+            <span id="hpChangePill" class="hp-change-pill hp-gain">+10 HP</span>
+          </div>
+          <div id="feedbackBody" class="feedback-body">
+            Explanation of why this answer works or fails in a real interview.
+          </div>
+          <div class="action-row" style="display: flex; justify-content: flex-end;">
+            <button id="nextBtn" class="btn-primary" style="padding: 10px 24px; font-size: 14px;">
+              Continue to Next Round →
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- =======================================================
+           PAGE 11: RESULTS & SCORECARD PAGE
+           ======================================================= -->
+      <section id="resultsPage" class="results-page" style="display: none; padding: 20px;">
+        <div class="scorecard-header">
+          <div id="rankBadge" class="rank-badge-large rank-s">RANK S</div>
+          <h2 id="scorecardTitle" class="scorecard-title">Senior Offer Extended!</h2>
+          <p id="scorecardSubtitle" class="scorecard-subtitle">
+            You successfully navigated the toughest technical and behavioral challenges.
+          </p>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-label">Interview Score</div>
+            <div id="finalScoreVal" class="stat-val">90%</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Confidence Remaining</div>
+            <div id="finalHpVal" class="stat-val">85%</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">STAR Method Mastery</div>
+            <div id="starGradeVal" class="stat-val">Master (S)</div>
+          </div>
+        </div>
+
+        <div class="tips-container">
+          <div class="tips-header">
+            <span>💡</span>
+            <span>Your 2 Key Interview Improvement Tips</span>
+          </div>
+          <div id="tipsContainer"></div>
+        </div>
+
+        <div class="quote-card">
+          <p id="quoteText" class="quote-text">
+            "Interviews are not an interrogation of your perfection; they are a collaborative audition of how you think, adapt, and build under uncertainty."
+          </p>
+          <div id="quoteAuthor" class="quote-author">— Engineering Leadership Principle</div>
+          <button id="quoteRefreshBtn" class="quote-refresh-btn">✨ Show Another Motivational Quote</button>
+        </div>
+
+        <div class="review-section">
+          <button id="reviewToggleBtn" class="review-toggle-btn">
+            <span>Review All 10 Questions & Hiring Insights</span>
+            <span>▼</span>
+          </button>
+          <div id="reviewContent" class="review-content"></div>
+        </div>
+
+        <div style="display: flex; justify-content: center; gap: 12px; margin-top: 10px; flex-wrap: wrap;">
+          <button id="restartBtn" class="btn-primary">
+            <span>⚔️ Play Again / Try Another Run</span>
+          </button>
+          <button id="returnToPortalFromResultsBtn" class="btn-primary" style="background: rgba(255, 255, 255, 0.1); border: 1px solid var(--border-color);">
+            <span>🏠 Return to Home</span>
+          </button>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="game-footer">
+      <span>10 Rounds • One Question Per Page</span>
+      <span id="footerClassStatus">Active Class: Full-Stack Warrior</span>
+    </footer>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
